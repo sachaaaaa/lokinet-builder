@@ -12,9 +12,9 @@ SODIUM_SRC=$(REPO)/deps/sodium
 LLARPD_SRC=$(REPO)/deps/llarp
 
 SODIUM_BUILD=$(PREFIX_SRC)/sodium
-SODIUM_CONFIG=$(SODIUM_BUILD)/configure
-SODIUM_LIB=$(SODIUM_BUILD)/lib/libsodium.a
-SODIUM_INC=$(SODIUM_BUILD)/include
+SODIUM_CONFIG=$(SODIUM_SRC)/configure
+SODIUM_LIB=$(SODIUM_PREFIX)/lib/libsodium.a
+SODIUM_INC=$(SODIUM_PREFIX)/include
 
 all: $(EXE)
 
@@ -25,20 +25,16 @@ ensure:
 	mkdir -p $(SODIUM_BUILD)
 
 $(SODIUM_CONFIG): ensure
-	cd $(SODIUM_BUILD)
-	$(SODIUM_SRC)/autogen.sh
-	$(SODIUM_CONFIG) --prefix=$(SODIUM_BUILD) --enable-static --disable-shared
-	cd $(REPO)
+	cd $(SODIUM_SRC) && $(SODIUM_SRC)/autogen.sh
+	cd $(SODIUM_BUILD) && $(SODIUM_CONFIG) --prefix=$(SODIUM_BUILD) --enable-static --disable-shared
 
 sodium: $(SODIUM_CONFIG)
 	$(MAKE) -C $(SODIUM_BUILD) install
 
 $(SODIUM_LIB): sodium
 
-$(EXE): $(SODUIM_LIB)
-	cd $(BUILD_DIR)
-	cmake $(LLARPD_SRC) -DSODIUM_LIBRARIES=$(SODIUM_LIB) -DSODIUM_INCLUDE_DIR=$(SODIUM_INC)
-	cd $(REPO)
+$(EXE): ensure sodium
+	cd $(BUILD_DIR) && cmake $(LLARPD_SRC) -DSODIUM_LIBRARIES=$(SODIUM_LIB) -DSODIUM_INCLUDE_DIR=$(SODIUM_INC)
 	$(MAKE) -C $(BUILD_DIR)
 
 clean:
