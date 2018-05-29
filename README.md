@@ -9,3 +9,7 @@ to build do:
     $ git clone --recursive https://github.com/majestrate/llarpd-builder
     $ cd llarpd-builder
     $ make
+
+to run:
+
+    $ ./llarpd deps/llarp/daemon.ini
