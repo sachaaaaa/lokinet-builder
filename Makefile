@@ -4,7 +4,6 @@ REPO := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 BUILD_DIR=$(REPO)/build
 
 EXE = $(REPO)/llarpd
-SHARED = $(REPO)/libllarp.so
 
 DEP_PREFIX=$(BUILD_DIR)/prefix
 PREFIX_SRC=$(DEP_PREFIX)/src
@@ -33,10 +32,9 @@ sodium: $(SODIUM_CONFIG)
 	$(MAKE) -C $(SODIUM_BUILD) install CFLAGS=-fPIC
 
 build: ensure sodium
-	cd $(BUILD_DIR) && cmake $(LLARPD_SRC) -DSODIUM_LIBRARIES=$(SODIUM_LIB) -DSODIUM_INCLUDE_DIR=$(DEP_PREFIX)/include -DWITH_SHARED=1
+	cd $(BUILD_DIR) && cmake $(LLARPD_SRC) -DSODIUM_LIBRARIES=$(SODIUM_LIB) -DSODIUM_INCLUDE_DIR=$(DEP_PREFIX)/include
 	$(MAKE) -C $(BUILD_DIR)
 	cp $(BUILD_DIR)/llarpd $(EXE)
-	cp $(BUILD_DIR)/libllarp.so $(SHARED)
 
 
 clean:
