@@ -12,4 +12,4 @@ to build do:
 
 to run:
 
-    $ ./llarpd deps/llarp/daemon.ini
+    $ ./llarpd
