@@ -3,13 +3,14 @@ REPO := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
 BUILD_DIR=$(REPO)/build
 
-EXE = $(REPO)/llarpd
+EXE = $(REPO)/lokinet
 
 DEP_PREFIX=$(BUILD_DIR)/prefix
 PREFIX_SRC=$(DEP_PREFIX)/src
 
 SODIUM_SRC=$(REPO)/deps/sodium
 LLARPD_SRC=$(REPO)/deps/llarp
+MOTTO=$(LLARPD_SRC)/motto.txt
 
 SODIUM_BUILD=$(PREFIX_SRC)/sodium
 SODIUM_CONFIG=$(SODIUM_SRC)/configure
@@ -49,6 +50,15 @@ static: static-sodium
 	cd $(BUILD_DIR) && cmake $(LLARPD_SRC) -DSODIUM_LIBRARIES=$(SODIUM_LIB) -DSODIUM_INCLUDE_DIR=$(DEP_PREFIX)/include -DSTATIC_LINK=ON -DCMAKE_C_COMPILER=ecc -DCMAKE_CXX_COMPILER=ecc++
 	$(MAKE) -C $(BUILD_DIR)
 	cp $(BUILD_DIR)/llarpd $(EXE)
+
+motto:
+	figlet "$(shell cat $(MOTTO))"
+
+release: static-sodium motto
+	cd $(BUILD_DIR) && cmake $(LLARPD_SRC) -DSODIUM_LIBRARIES=$(SODIUM_LIB) -DSODIUM_INCLUDE_DIR=$(DEP_PREFIX)/include -DSTATIC_LINK=ON -DCMAKE_C_COMPILER=ecc -DCMAKE_CXX_COMPILER=ecc++ -DCMAKE_BUILD_TYPE=Release -DRELEASE_MOTTO="$(shell cat $(MOTTO))"
+	$(MAKE) -C $(BUILD_DIR)
+	cp $(BUILD_DIR)/llarpd $(EXE)
+	gpg --sign --detach $(EXE)
 
 clean:
 	rm -rf $(BUILD_DIR) $(EXE)
