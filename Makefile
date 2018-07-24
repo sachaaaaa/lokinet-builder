@@ -19,6 +19,11 @@ SODIUM_LIB=$(DEP_PREFIX)/lib/libsodium.a
 NDK ?= $(HOME)/android-ndk
 NDK_INSTALL_DIR = $(BUILD_DIR)/ndk
 
+CROSS_TARGET ?=arm-bcm2708hardfp-linux-gnueabi
+
+CROSS_CC ?=$(CROSS_TARGET)-gcc
+CROSS_CXX ?=$(CROSS_TARGET)-g++
+
 all: build
 
 ensure:
@@ -58,9 +63,18 @@ android-arm-sodium:
 
 android-arm: android-arm-sodium
 	$(NDK)/build/tools/make_standalone_toolchain.py --force --api=16 --arch=arm --install-dir=$(NDK_INSTALL_DIR) 
-	cd $(BUILD_DIR) && cmake $(LLARPD_SRC) -DSODIUM_LIBRARIES=$(SODIUM_SRC)/libsodium-android-armv6/lib/libsodium.a -DSODIUM_INCLUDE_DIR=$(SODIUM_SRC)/libsodium-android-armv6/include -DSTATIC_LINK=ON -DCMAKE_C_COMPILER=$(NDK_INSTALL_DIR)/bin/clang -DCMAKE_CXX_COMPILER=$(NDK_INSTALL_DIR)/bin/clang++
+	cd $(BUILD_DIR) && cmake $(LLARPD_SRC) -DSODIUM_LIBRARIES=$(SODIUM_SRC)/libsodium-android-armv6/lib/libsodium.a -DSODIUM_INCLUDE_DIR=$(SODIUM_SRC)/libsodium-android-armv6/include -DCMAKE_C_COMPILER=$(NDK_INSTALL_DIR)/bin/clang -DCMAKE_CXX_COMPILER=$(NDK_INSTALL_DIR)/bin/clang++ -DCMAKE_SYSROOT=$(NDK_INSTALL_DIR)/sysroot -DANDROID=ON
 	$(MAKE) -C $(BUILD_DIR) 
 
+cross-sodium: ensure
+	cd $(SODIUM_SRC) && $(SODIUM_SRC)/autogen.sh
+	cd $(SODIUM_BUILD) && $(SODIUM_CONFIG) --prefix=$(DEP_PREFIX) --enable-static --disable-shared --target=$(CROSS_TARGET)
+	$(MAKE) -C $(SODIUM_BUILD) install
+
+cross: cross-sodium
+	cd $(BUILD_DIR) && cmake $(LLARPD_SRC) -DSTATIC_LINK=ON -DSODIUM_LIBRARIES=$(SODIUM_LIB) -DSODIUM_INCLUDE_DIR=$(DEP_PREFIX)/include -DCMAKE_C_COMPILER=$(CROSS_CC) -DCMAKE_CXX_COMPILER=$(CROSS_CXX) -DCMAKE_CROSS_COMPILING=ON
+	$(MAKE) -C $(BUILD_DIR)
+	cp $(BUILD_DIR)/llarpd $(EXE)
 
 motto:
 	figlet "$(shell cat $(MOTTO))"
