@@ -68,7 +68,7 @@ android-arm: android-arm-sodium
 
 cross-sodium: ensure
 	cd $(SODIUM_SRC) && $(SODIUM_SRC)/autogen.sh
-	cd $(SODIUM_BUILD) && $(SODIUM_CONFIG) --prefix=$(DEP_PREFIX) --enable-static --disable-shared --target=$(CROSS_TARGET)
+	cd $(SODIUM_BUILD) && $(SODIUM_CONFIG) --prefix=$(DEP_PREFIX) --enable-static --disable-shared --host=$(CROSS_TARGET)
 	$(MAKE) -C $(SODIUM_BUILD) install
 
 cross: cross-sodium
