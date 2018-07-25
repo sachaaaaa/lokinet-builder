@@ -24,7 +24,9 @@ CROSS_TARGET ?=arm-bcm2708hardfp-linux-gnueabi
 CROSS_CC ?=$(CROSS_TARGET)-gcc
 CROSS_CXX ?=$(CROSS_TARGET)-g++
 
-all: build
+MINGW_TOOLCHAIN = $(REPO)/contrib/cross/mingw.cmake
+
+all: build wizard
 
 ensure:
 	mkdir -p $(BUILD_DIR)
@@ -76,6 +78,17 @@ cross: cross-sodium
 	$(MAKE) -C $(BUILD_DIR)
 	cp $(BUILD_DIR)/llarpd $(EXE)
 
+windows-sodium: ensure
+	cd $(SODIUM_SRC) && $(SODIUM_SRC)/autogen.sh
+	cd $(SODIUM_BUILD) && $(SODIUM_CONFIG) --prefix=$(DEP_PREFIX) --enable-static --disable-shared --host=x86_64-w64-mingw32
+	$(MAKE) -C $(SODIUM_BUILD) install
+
+
+windows: windows-sodium
+	cd $(BUILD_DIR) && cmake $(LLARPD_SRC) -DSTATIC_LINK=ON -DSODIUM_LIBRARIES=$(SODIUM_LIB) -DSODIUM_INCLUDE_DIR=$(DEP_PREFIX)/include -DCMAKE_TOOLCHAIN_FILE=$(MINGW_TOOLCHAIN)
+	$(MAKE) -C $(BUILD_DIR)
+	cp $(BUILD_DIR)/llarpd $(EXE)
+
 motto:
 	figlet "$(shell cat $(MOTTO))"
 
@@ -83,7 +96,10 @@ release: static-sodium motto
 	cd $(BUILD_DIR) && cmake $(LLARPD_SRC) -DSODIUM_LIBRARIES=$(SODIUM_LIB) -DSODIUM_INCLUDE_DIR=$(DEP_PREFIX)/include -DSTATIC_LINK=ON -DCMAKE_C_COMPILER=ecc -DCMAKE_CXX_COMPILER=ecc++ -DCMAKE_BUILD_TYPE=Release -DRELEASE_MOTTO="$(shell cat $(MOTTO))"
 	$(MAKE) -C $(BUILD_DIR)
 	cp $(BUILD_DIR)/llarpd $(EXE)
-	gpg --sign --detach $(EXE)
+	#gpg --sign --detach $(EXE)
 
 clean:
 	rm -rf $(BUILD_DIR) $(EXE)
+
+wizard:
+	$(LLARPD_SRC)/contrib/wizard/lokinet-wizard.sh
