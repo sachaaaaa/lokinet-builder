@@ -43,7 +43,7 @@ sodium: sodium-configure
 	$(MAKE) -C $(SODIUM_BUILD) install CFLAGS=-fPIC
 
 build: ensure sodium
-	cd $(BUILD_DIR) && cmake $(LLARPD_SRC) -DSODIUM_LIBRARIES=$(SODIUM_LIB) -DSODIUM_INCLUDE_DIR=$(DEP_PREFIX)/include
+	cd $(BUILD_DIR) && cmake $(LLARPD_SRC) -DSODIUM_LIBRARIES=$(SODIUM_LIB) -DSODIUM_INCLUDE_DIR=$(DEP_PREFIX)/include -G "Unix Makefiles"
 	$(MAKE) -C $(BUILD_DIR)
 	cp $(BUILD_DIR)/llarpd $(EXE)
 
