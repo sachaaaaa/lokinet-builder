@@ -3,4 +3,4 @@
 	url = https://github.com/jedisct1/libsodium
 [submodule "deps/llarp"]
 	path = deps/llarp
-	url = https://github.com/majestrate/llarp
+	url = https://github.com/loki-project/loki-network
