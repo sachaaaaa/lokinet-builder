@@ -1,0 +1,30 @@
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+  GIT_STRATEGY: fetch
+
+stages:
+  - build
+  - test
+
+build:linux:
+  image: alpine:latest
+  tags:
+    - linux
+  stage: build
+  before_script:
+    - apk add --update g++ make cmake automake libtool autoconf
+  script:
+    - make
+  artifacts:
+    paths:
+      - "lokinet"
+
+build:osx:
+  tags:
+    - osx
+  stage: build
+  script:
+    - make
+  artifacts:
+    paths:
+      - "lokinet"
