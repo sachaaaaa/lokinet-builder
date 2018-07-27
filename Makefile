@@ -61,12 +61,14 @@ static: static-sodium
 	cp $(BUILD_DIR)/llarpd $(EXE)
 
 android-arm-sodium:
-	cd $(SODIUM_SRC) && $(SODIUM_SRC)/autogen.sh && ANDROID_NDK_HOME=$(NDK) $(SODIUM_SRC)/dist-build/android-arm.sh
+	cd $(SODIUM_SRC) && $(SODIUM_SRC)/autogen.sh && LIBSODIUM_FULL_BUILD=1 ANDROID_NDK_HOME=$(NDK) $(SODIUM_SRC)/dist-build/android-arm.sh
 
-android-arm: android-arm-sodium
+android-arm-native: android-arm-sodium
 	$(NDK)/build/tools/make_standalone_toolchain.py --force --api=16 --arch=arm --install-dir=$(NDK_INSTALL_DIR) 
-	cd $(BUILD_DIR) && cmake $(LLARPD_SRC) -DSODIUM_LIBRARIES=$(SODIUM_SRC)/libsodium-android-armv6/lib/libsodium.a -DSODIUM_INCLUDE_DIR=$(SODIUM_SRC)/libsodium-android-armv6/include -DCMAKE_C_COMPILER=$(NDK_INSTALL_DIR)/bin/clang -DCMAKE_CXX_COMPILER=$(NDK_INSTALL_DIR)/bin/clang++ -DCMAKE_SYSROOT=$(NDK_INSTALL_DIR)/sysroot -DANDROID=ON
+	cd $(BUILD_DIR) && cmake $(LLARPD_SRC) -DSODIUM_LIBRARIES=$(SODIUM_SRC)/libsodium-android-armv6/lib/libsodium.a -DSODIUM_INCLUDE_DIR=$(SODIUM_SRC)/libsodium-android-armv6/include -DCMAKE_C_COMPILER=$(NDK_INSTALL_DIR)/bin/clang -DCMAKE_CXX_COMPILER=$(NDK_INSTALL_DIR)/bin/clang++ -DCMAKE_SYSROOT=$(NDK_INSTALL_DIR)/sysroot -DANDROID=ON -DWITH_SHARED=ON
 	$(MAKE) -C $(BUILD_DIR) 
+
+android-arm: android-arm-native
 
 cross-sodium: ensure
 	cd $(SODIUM_SRC) && $(SODIUM_SRC)/autogen.sh
