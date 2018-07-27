@@ -26,7 +26,7 @@ CROSS_CXX ?=$(CROSS_TARGET)-g++
 
 MINGW_TOOLCHAIN = $(REPO)/contrib/cross/mingw.cmake
 
-all: build wizard
+all: build
 
 ensure:
 	mkdir -p $(BUILD_DIR)
@@ -100,6 +100,3 @@ release: static-sodium motto
 
 clean:
 	rm -rf $(BUILD_DIR) $(EXE)
-
-wizard:
-	$(LLARPD_SRC)/contrib/wizard/lokinet-wizard.sh
