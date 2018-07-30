@@ -1,4 +1,4 @@
-lokinet (0.0.2) stable; urgency=low
+lokinet (0.0.2) xenial; urgency=low
 
   * Initial Packaging
 

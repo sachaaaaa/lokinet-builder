@@ -4,3 +4,4 @@ llarpd
 libllarp.so
 
 debian/.debhelper/
+debian/lokinet/
