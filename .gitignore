@@ -2,3 +2,5 @@ build/
 *~
 llarpd
 libllarp.so
+
+debian/.debhelper/
