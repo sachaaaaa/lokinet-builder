@@ -28,7 +28,7 @@ MINGW_TOOLCHAIN = $(REPO)/contrib/cross/mingw.cmake
 
 all: build
 
-ensure:
+ensure: clean
 	mkdir -p $(BUILD_DIR)
 	mkdir -p $(DEP_PREFIX)
 	mkdir -p $(PREFIX_SRC)
@@ -87,9 +87,9 @@ windows-sodium: ensure
 
 
 windows: windows-sodium
-	cd $(BUILD_DIR) && cmake $(LLARPD_SRC) -DSTATIC_LINK=ON -DSODIUM_LIBRARIES=$(SODIUM_LIB) -DSODIUM_INCLUDE_DIR=$(DEP_PREFIX)/include -DCMAKE_TOOLCHAIN_FILE=$(MINGW_TOOLCHAIN)
+	cd $(BUILD_DIR) && cmake $(LLARPD_SRC) -DSTATIC_LINK=ON -DSODIUM_LIBRARIES=$(SODIUM_LIB) -DSODIUM_INCLUDE_DIR=$(DEP_PREFIX)/include -DCMAKE_TOOLCHAIN_FILE=$(MINGW_TOOLCHAIN) -DHAVE_CXX17_FILESYSTEM=ON
 	$(MAKE) -C $(BUILD_DIR)
-	cp $(BUILD_DIR)/llarpd $(EXE)
+	cp $(BUILD_DIR)/llarpd.exe $(EXE).exe
 
 motto:
 	figlet "$(shell cat $(MOTTO))"
