@@ -21,3 +21,10 @@ this repo is a recursive repo for building lokinet with all of the required libr
     $ cd lokinet-builder
     $ make windows
 
+## building the debian package
+
+    $ sudo apt install devscripts build-essential libtool autoconf cmake git
+    $ git clone --recursive https://github.com/loki-project/lokinet-builder
+    $ cd lokinet-builder
+    $ debuild -b -us -uc
+    
