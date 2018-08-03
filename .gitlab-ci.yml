@@ -19,6 +19,20 @@ build:linux:
     paths:
       - "lokinet"
 
+build:windows-mingw:
+  image: ubuntu:latest
+  tags:
+    - linux
+  stage: build
+  before_script:
+    - apt update
+    - apt install --yes build-essential libtool autoconf cmake git mingw-w64
+  script:
+    - make -j4 windows
+  artifacts:
+    paths:
+      - "lokinet.exe"
+
 build:osx:
   tags:
     - osx
